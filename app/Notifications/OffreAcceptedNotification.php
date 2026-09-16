@@ -12,24 +12,28 @@ class OffreAcceptedNotification extends Notification
 
     public function __construct(
         public Offre $offre
-    ) {
-    }
+    ) {}
 
     public function via(object $notifiable): array
     {
         return ['database'];
     }
 
-    public function toDatabase(object $notifiable): array
+    public function toArray(object $notifiable): array
     {
         return [
             'message' => 'Votre offre pour la mission "'
-                . $this->offre->mission->titre
-                . '" a été acceptée.',
+                .$this->offre->mission->titre
+                .'" a été acceptée.',
 
             'offre_id' => $this->offre->id,
 
             'mission_id' => $this->offre->mission_id,
         ];
+    }
+
+    public function toDatabase(object $notifiable): array
+    {
+        return $this->toArray($notifiable);
     }
 }

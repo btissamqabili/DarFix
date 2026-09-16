@@ -49,7 +49,7 @@ class EvaluationController extends Controller
             ->first();
 
         // Vérifier qu’un prestataire est associé.
-        if (!$offre) {
+        if (! $offre) {
             return back()->with(
                 'error',
                 'Aucun prestataire associé à cette mission.'

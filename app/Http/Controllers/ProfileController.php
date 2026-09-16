@@ -15,23 +15,23 @@ class ProfileController extends Controller
      * Display the user's profile form.
      */
     public function edit(Request $request): View
-{
-    $user = $request->user();
+    {
+        $user = $request->user();
 
-    $evaluations = collect();
+        $evaluations = collect();
 
-    if ($user->role === 'prestataire') {
-        $evaluations = $user->evaluationsRecues()
-            ->with('client')
-            ->latest()
-            ->get();
+        if ($user->role === 'prestataire') {
+            $evaluations = $user->evaluationsRecues()
+                ->with('client')
+                ->latest()
+                ->get();
+        }
+
+        return view('profile.edit', [
+            'user' => $user,
+            'evaluations' => $evaluations,
+        ]);
     }
-
-    return view('profile.edit', [
-        'user' => $user,
-        'evaluations' => $evaluations,
-    ]);
-}
 
     /**
      * Update the user's profile information.

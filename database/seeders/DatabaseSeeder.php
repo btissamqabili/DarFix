@@ -306,7 +306,7 @@ class DatabaseSeeder extends Seeder
 
             $offre = $mission->offres()->first();
 
-            if (!$offre) {
+            if (! $offre) {
                 continue;
             }
 

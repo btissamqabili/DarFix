@@ -12,8 +12,7 @@ class NouvelleMissionNotification extends Notification
 
     public function __construct(
         public Mission $mission
-    ) {
-    }
+    ) {}
 
     /**
      * Get the notification's delivery channels.

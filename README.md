@@ -1,6 +1,6 @@
-# Brico Link
+# DarFix
 
-Brico Link est une plateforme Laravel de mise en relation entre clients et prestataires de services a domicile.
+DarFix est une plateforme Laravel de mise en relation entre clients et prestataires de services a domicile.
 
 ## Fonctionnalites
 

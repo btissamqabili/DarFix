@@ -13,8 +13,8 @@ use App\Http\Controllers\PrestataireController;
 use App\Http\Controllers\PrestataireMissionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ServiceController;
-use App\Models\Offre;
 use App\Models\Mission;
+use App\Models\Offre;
 use App\Models\Prestation;
 use App\Models\Service;
 use Illuminate\Support\Facades\Route;
@@ -149,10 +149,6 @@ Route::middleware(['auth', 'role:client'])->group(function () {
     // Évaluation
     Route::post('/missions/{mission}/evaluation', [EvaluationController::class, 'store'])
         ->name('evaluations.store');
-
-    // Profil prestataire
-    Route::get('/prestataires/{id}', [PrestataireController::class, 'show'])
-        ->name('prestataires.show');
 });
 
 /*
@@ -209,6 +205,9 @@ Route::middleware(['auth', 'role:prestataire'])->group(function () {
 */
 
 Route::middleware('auth')->group(function () {
+    Route::get('/prestataires/{id}', [PrestataireController::class, 'show'])
+        ->name('prestataires.show');
+
     Route::get('/prestations/{prestation}/facture', [FactureController::class, 'download'])
         ->name('prestations.facture');
 
@@ -274,4 +273,4 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 |--------------------------------------------------------------------------
 */
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

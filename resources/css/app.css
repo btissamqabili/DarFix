@@ -10,7 +10,7 @@
 }
 
 @layer components {
-	/* Keep older Blade utility classes aligned with the current Bricofy palette. */
+	/* Keep older Blade utility classes aligned with the current DarFix palette. */
 	[class~="text-[#7F2020]"] { color: var(--bordeaux) !important; }
 	[class~="bg-[#7F2020]"] { background-color: var(--bordeaux) !important; }
 	[class~="border-[#7F2020]"] { border-color: var(--bordeaux) !important; }

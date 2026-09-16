@@ -26,7 +26,7 @@ return new class extends Migration
             $table->enum('statut', [
                 'en_attente',
                 'acceptee',
-                'refusee'
+                'refusee',
             ])->default('en_attente');
 
             $table->timestamps();

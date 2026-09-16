@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Models\Evaluation;
 use App\Models\Mission;
 use App\Models\Offre;
-use App\Models\Evaluation;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;

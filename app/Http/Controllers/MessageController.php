@@ -45,7 +45,8 @@ class MessageController extends Controller
             new NewMessageNotification(
                 $message->id,
                 auth()->user()->name,
-                $message->contenu
+                $message->contenu,
+                $conversation->id
             )
         );
 

@@ -5,11 +5,8 @@ namespace Tests\Feature;
 use App\Models\Categorie;
 use App\Models\Mission;
 use App\Models\Offre;
-use App\Models\Prestation;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class MissionWorkflowTest extends TestCase
@@ -41,23 +38,32 @@ class MissionWorkflowTest extends TestCase
         ]);
     }
 
-    public function test_client_can_upload_mission_photos(): void
+    public function test_client_can_update_a_mission(): void
     {
-        Storage::fake('public');
         $client = User::factory()->client()->create();
         $categorie = Categorie::create(['nom' => 'Jardinage']);
-
-        $this->actingAs($client)->post(route('missions.store'), [
-            'titre' => 'Entretenir un jardin',
-            'description' => 'Taille et nettoyage du jardin.',
+        $mission = Mission::factory()->create([
+            'client_id' => $client->id,
             'categorie_id' => $categorie->id,
-            'photos' => [UploadedFile::fake()->image('jardin.jpg')],
-        ])->assertRedirect();
+            'titre' => 'Ancien titre',
+            'statut' => 'ouverte',
+        ]);
 
-        $mission = Mission::latest('id')->first();
+        $this->actingAs($client)->put(route('missions.update', $mission), [
+            'titre' => 'Nouveau titre pour la mission',
+            'description' => 'Description détaillée mise à jour.',
+            'categorie_id' => $categorie->id,
+            'budget' => 450,
+            'adresse' => 'Rabat',
+            'date_souhaitee' => now()->addDays(5)->toDateString(),
+        ])->assertRedirect(route('missions.index'));
 
-        $this->assertCount(1, $mission->photos);
-        Storage::disk('public')->assertExists($mission->photos[0]);
+        $this->assertDatabaseHas('missions', [
+            'id' => $mission->id,
+            'titre' => 'Nouveau titre pour la mission',
+            'budget' => 450,
+            'adresse' => 'Rabat',
+        ]);
     }
 
     public function test_accepting_an_offer_creates_a_prestation_and_completion_closes_it(): void

@@ -13,8 +13,7 @@ class NouvelleOffreNotification extends Notification
         public int $missionId,
         public string $prestataireNom,
         public float $prixPropose
-    ) {
-    }
+    ) {}
 
     public function via(object $notifiable): array
     {
@@ -31,4 +30,3 @@ class NouvelleOffreNotification extends Notification
         ];
     }
 }
-

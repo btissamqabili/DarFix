@@ -6,7 +6,6 @@ use App\Http\Requests\MissionStoreRequest;
 use App\Http\Requests\MissionUpdateRequest;
 use App\Models\Categorie;
 use App\Models\Mission;
-use App\Models\Prestation;
 use App\Models\User;
 use App\Notifications\NouvelleMissionNotification;
 use Illuminate\Support\Facades\Gate;
@@ -20,8 +19,9 @@ class MissionController extends Controller
             ->missions()
             ->with([
                 'evaluations',
+                'prestations',
                 'offres' => function ($query) {
-                    $query->where('statut', 'acceptee');
+                    $query->where('statut', 'acceptee')->with('prestataire');
                 },
             ])
             ->latest()

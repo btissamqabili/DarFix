@@ -9,38 +9,38 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-   public function up(): void
-{
-    Schema::create('evaluations', function (Blueprint $table) {
-        $table->id();
+    public function up(): void
+    {
+        Schema::create('evaluations', function (Blueprint $table) {
+            $table->id();
 
-        $table->foreignId('mission_id')
-            ->constrained('missions')
-            ->cascadeOnDelete();
+            $table->foreignId('mission_id')
+                ->constrained('missions')
+                ->cascadeOnDelete();
 
-        $table->foreignId('client_id')
-            ->constrained('users')
-            ->cascadeOnDelete();
+            $table->foreignId('client_id')
+                ->constrained('users')
+                ->cascadeOnDelete();
 
-        $table->foreignId('prestataire_id')
-            ->constrained('users')
-            ->cascadeOnDelete();
+            $table->foreignId('prestataire_id')
+                ->constrained('users')
+                ->cascadeOnDelete();
 
-        $table->unsignedTinyInteger('note');
+            $table->unsignedTinyInteger('note');
 
-        $table->text('commentaire')->nullable();
+            $table->text('commentaire')->nullable();
 
-        $table->timestamps();
+            $table->timestamps();
 
-        $table->unique(['mission_id', 'client_id']);
-    });
-}
+            $table->unique(['mission_id', 'client_id']);
+        });
+    }
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
-{
-    Schema::dropIfExists('evaluations');
-}
+    {
+        Schema::dropIfExists('evaluations');
+    }
 };

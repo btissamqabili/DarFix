@@ -179,4 +179,3 @@ class OffreController extends Controller
             ->with('success', 'Votre offre a été annulée.');
     }
 }
-

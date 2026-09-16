@@ -12,8 +12,7 @@ class NouvelleEvaluationNotification extends Notification
 
     public function __construct(
         public Evaluation $evaluation
-    ) {
-    }
+    ) {}
 
     public function via(object $notifiable): array
     {

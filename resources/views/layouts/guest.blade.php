@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>Bricofy</title>
+        <title>{{ config('app.name', 'DarFix') }}</title>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -16,7 +16,10 @@
         <div class="min-h-screen bg-[#f6f3eb] px-5 py-10 sm:flex sm:flex-col sm:items-center sm:justify-center">
             <div>
                 <a href="/">
-                    <span aria-label="Bricofy" class="flex items-center gap-3 font-serif text-3xl font-bold tracking-[-0.04em] text-[#7F2020]"><span aria-hidden="true" class="flex h-10 w-10 items-center justify-center rounded-sm bg-[#7F2020] text-xl text-[#F6F3EB]">⚒</span>Bricofy<span class="text-[#869B7E]">.</span></span>
+                    <span aria-label="DarFix" class="flex items-center gap-3 font-serif text-3xl font-bold tracking-[-0.04em] text-[#8b1e1e]">
+                        <span aria-hidden="true" class="flex h-10 w-10 items-center justify-center rounded-sm bg-[#8b1e1e] text-xl text-[#F6F3EB]">⚒</span>
+                        DarFix
+                    </span>
                 </a>
             </div>
 

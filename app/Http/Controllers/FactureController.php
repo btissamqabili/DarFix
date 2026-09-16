@@ -20,6 +20,6 @@ class FactureController extends Controller
         $prestation->load(['mission.client', 'prestataire', 'offre']);
 
         return Pdf::loadView('factures.show', compact('prestation'))
-            ->download('facture-prestation-' . $prestation->id . '.pdf');
+            ->download('facture-prestation-'.$prestation->id.'.pdf');
     }
 }
