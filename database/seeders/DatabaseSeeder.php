@@ -9,6 +9,7 @@ use App\Models\Offre;
 use App\Models\Prestation;
 use App\Models\Service;
 use App\Models\User;
+use Faker\Factory as Faker;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -16,6 +17,8 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        $faker = Faker::create();
+
         /*
         |--------------------------------------------------------------------------
         | Utilisateurs principaux
@@ -86,8 +89,8 @@ class DatabaseSeeder extends Seeder
                         'name' => "Prestataire {$i}",
                         'password' => Hash::make('password123'),
                         'role' => 'prestataire',
-                        'description' => fake()->paragraph(),
-                        'competences' => fake()->randomElement([
+                        'description' => $faker->paragraph(),
+                        'competences' => $faker->randomElement([
                             'Plomberie',
                             'Électricité',
                             'Peinture',
@@ -96,8 +99,8 @@ class DatabaseSeeder extends Seeder
                             'Jardinage',
                             'Maçonnerie',
                         ]),
-                        'experience' => fake()->numberBetween(1, 15),
-                        'disponibilite' => fake()->randomElement([
+                        'experience' => $faker->numberBetween(1, 15),
+                        'disponibilite' => $faker->randomElement([
                             'Disponible immédiatement',
                             'En semaine',
                             'Le week-end',
@@ -154,7 +157,6 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($prestataires as $index => $prestataire) {
-
             $categorie = $categories[$index % $categories->count()];
 
             $nomService = $servicesData[$index % count($servicesData)];
@@ -166,8 +168,8 @@ class DatabaseSeeder extends Seeder
                 ],
                 [
                     'categorie_id' => $categorie->id,
-                    'description' => fake()->sentence(15),
-                    'prix' => fake()->randomFloat(2, 150, 1200),
+                    'description' => $faker->sentence(15),
+                    'prix' => $faker->randomFloat(2, 150, 1200),
                 ]
             );
         }
@@ -226,9 +228,7 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($clients as $clientIndex => $client) {
-
             foreach ($missionsData as $missionIndex => $data) {
-
                 if ($missionIndex >= 2 && $clientIndex > 1) {
                     break;
                 }
@@ -243,7 +243,9 @@ class DatabaseSeeder extends Seeder
                         'budget' => $data['budget'],
                         'adresse' => $data['adresse'],
                         'categorie_id' => $categories[$missionIndex % $categories->count()]->id,
-                        'date_souhaitee' => now()->addDays($missionIndex + 1)->toDateString(),
+                        'date_souhaitee' => now()
+                            ->addDays($missionIndex + 1)
+                            ->toDateString(),
                         'statut' => $data['statut'],
                     ]
                 );
@@ -259,16 +261,11 @@ class DatabaseSeeder extends Seeder
         */
 
         foreach ($missions as $mission) {
-
-            /*
-             * On ajoute quelques offres pour les missions ouvertes/en cours.
-             */
             $prestatairesPourMission = $prestataires
                 ->shuffle()
                 ->take(2);
 
             foreach ($prestatairesPourMission as $index => $prestataire) {
-
                 Offre::firstOrCreate(
                     [
                         'mission_id' => $mission->id,
@@ -279,13 +276,13 @@ class DatabaseSeeder extends Seeder
                             100,
                             ($mission->budget ?? 500) - ($index * 50)
                         ),
-                        'message' => fake()->randomElement([
+                        'message' => $faker->randomElement([
                             'Bonjour, je suis disponible pour réaliser cette mission.',
                             'Je peux intervenir rapidement et effectuer le travail proprement.',
                             'Je possède une bonne expérience dans ce type de travaux.',
                             'Je serais ravi de réaliser cette mission.',
                         ]),
-                        'delai_execution' => fake()->numberBetween(1, 14),
+                        'delai_execution' => $faker->numberBetween(1, 14),
                         'statut' => 'en_attente',
                     ]
                 );
@@ -303,7 +300,6 @@ class DatabaseSeeder extends Seeder
             ->values();
 
         foreach ($missionsTerminees as $mission) {
-
             $offre = $mission->offres()->first();
 
             if (! $offre) {
@@ -339,8 +335,8 @@ class DatabaseSeeder extends Seeder
                 ],
                 [
                     'prestataire_id' => $offre->prestataire_id,
-                    'note' => fake()->numberBetween(3, 5),
-                    'commentaire' => fake()->randomElement([
+                    'note' => $faker->numberBetween(3, 5),
+                    'commentaire' => $faker->randomElement([
                         'Très bon travail, prestataire sérieux et ponctuel.',
                         'Intervention rapide et travail de qualité.',
                         'Très satisfait du résultat.',

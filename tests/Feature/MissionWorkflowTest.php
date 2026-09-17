@@ -6,7 +6,9 @@ use App\Models\Categorie;
 use App\Models\Mission;
 use App\Models\Offre;
 use App\Models\User;
+use App\Notifications\NouvelleMissionNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
 class MissionWorkflowTest extends TestCase
@@ -36,6 +38,67 @@ class MissionWorkflowTest extends TestCase
             'categorie_id' => $categorie->id,
             'titre' => 'Réparer une fuite',
         ]);
+    }
+
+    public function test_duplicate_mission_submission_creates_only_one_mission(): void
+    {
+        Notification::fake();
+
+        $client = User::factory()->client()->create();
+        User::factory()->prestataire()->create();
+        $categorie = Categorie::create([
+            'nom' => 'Plomberie',
+            'description' => 'Travaux de plomberie',
+        ]);
+
+        $payload = [
+            'titre' => 'Réparer une fuite',
+            'description' => 'Réparer la fuite sous l’évier.',
+            'categorie_id' => $categorie->id,
+            'budget' => 350,
+            'adresse' => 'Khouribga',
+            'date_souhaitee' => now()->addDays(3)->toDateString(),
+        ];
+
+        $this->actingAs($client)->post(route('missions.store'), $payload)
+            ->assertRedirect(route('missions.index'));
+
+        $this->actingAs($client)->post(route('missions.store'), $payload)
+            ->assertRedirect(route('missions.index'));
+
+        $this->assertDatabaseCount('missions', 1);
+        Notification::assertSentTimes(NouvelleMissionNotification::class, 1);
+    }
+
+    public function test_client_can_create_two_distinct_missions_with_the_same_title(): void
+    {
+        $client = User::factory()->client()->create();
+        $categorie = Categorie::create([
+            'nom' => 'Menuiserie',
+            'description' => 'Travaux de menuiserie',
+        ]);
+
+        $firstMission = [
+            'titre' => 'Petit meuble',
+            'description' => 'Meuble en chêne.',
+            'categorie_id' => $categorie->id,
+            'budget' => 300,
+        ];
+
+        $secondMission = [
+            'titre' => 'Petit meuble',
+            'description' => 'Meuble en sapin.',
+            'categorie_id' => $categorie->id,
+            'budget' => 200,
+        ];
+
+        $this->actingAs($client)->post(route('missions.store'), $firstMission)
+            ->assertRedirect(route('missions.index'));
+
+        $this->actingAs($client)->post(route('missions.store'), $secondMission)
+            ->assertRedirect(route('missions.index'));
+
+        $this->assertDatabaseCount('missions', 2);
     }
 
     public function test_client_can_update_a_mission(): void

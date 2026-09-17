@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Evaluation;
 use App\Models\Mission;
+use App\Models\User;
 use App\Notifications\NouvelleEvaluationNotification;
 use Illuminate\Http\Request;
 
@@ -11,13 +12,11 @@ class EvaluationController extends Controller
 {
     public function store(Request $request, Mission $mission)
     {
-        // Vérifier que la mission appartient au client connecté.
         abort_unless(
             $mission->client_id === auth()->id(),
             403
         );
 
-        // Vérifier que la mission est terminée.
         if ($mission->statut !== 'terminee') {
             return back()->with(
                 'error',
@@ -25,7 +24,6 @@ class EvaluationController extends Controller
             );
         }
 
-        // Vérifier si le client a déjà évalué cette mission.
         $dejaEvaluee = Evaluation::where('mission_id', $mission->id)
             ->where('client_id', auth()->id())
             ->exists();
@@ -37,18 +35,15 @@ class EvaluationController extends Controller
             );
         }
 
-        // Valider les données du formulaire.
         $validated = $request->validate([
             'note' => ['required', 'integer', 'min:1', 'max:5'],
             'commentaire' => ['nullable', 'string', 'max:1000'],
         ]);
 
-        // Récupérer l’offre acceptée.
         $offre = $mission->offres()
             ->where('statut', 'acceptee')
             ->first();
 
-        // Vérifier qu’un prestataire est associé.
         if (! $offre) {
             return back()->with(
                 'error',
@@ -56,7 +51,6 @@ class EvaluationController extends Controller
             );
         }
 
-        // Créer l’évaluation.
         $evaluation = Evaluation::create([
             'mission_id' => $mission->id,
             'client_id' => auth()->id(),
@@ -65,10 +59,17 @@ class EvaluationController extends Controller
             'commentaire' => $validated['commentaire'] ?? null,
         ]);
 
-        // Notifier le prestataire.
+        // Notifier le prestataire
         $offre->prestataire->notify(
             new NouvelleEvaluationNotification($evaluation)
         );
+
+        // Notifier tous les administrateurs
+        User::where('role', 'admin')->each(function ($admin) use ($evaluation) {
+            $admin->notify(
+                new NouvelleEvaluationNotification($evaluation)
+            );
+        });
 
         return back()->with(
             'success',

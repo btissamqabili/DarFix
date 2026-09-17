@@ -8,6 +8,7 @@ use App\Models\Categorie;
 use App\Models\Mission;
 use App\Models\User;
 use App\Notifications\NouvelleMissionNotification;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 
@@ -51,6 +52,14 @@ class MissionController extends Controller
     {
         $validated = $request->validated();
 
+        $duplicate = $this->findRecentDuplicate($validated);
+
+        if ($duplicate) {
+            return redirect()
+                ->route('missions.index')
+                ->with('success', 'Votre mission a déjà été publiée à l’instant, aucune doublure n’a été créée.');
+        }
+
         $mission = auth()->user()
             ->missions()
             ->create($validated);
@@ -66,6 +75,40 @@ class MissionController extends Controller
         return redirect()
             ->route('missions.index')
             ->with('success', 'Mission créée avec succès.');
+    }
+
+    /**
+     * Détecte une mission identique créée par le même client
+     * dans les dernières secondes (double soumission accidentelle).
+     */
+    private function findRecentDuplicate(array $validated): ?Mission
+    {
+        $query = Mission::query()
+            ->where('client_id', auth()->id())
+            ->where('created_at', '>=', now()->subSeconds(30));
+
+        foreach ([
+            'titre',
+            'description',
+            'categorie_id',
+            'budget',
+            'adresse',
+            'date_souhaitee',
+        ] as $field) {
+            if (! array_key_exists($field, $validated)) {
+                continue;
+            }
+
+            $value = $validated[$field];
+
+            if ($field === 'date_souhaitee' && $value !== null) {
+                $value = Carbon::parse($value);
+            }
+
+            $query->where($field, $value);
+        }
+
+        return $query->latest('id')->first();
     }
 
     public function update(
